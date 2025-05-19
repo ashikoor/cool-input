@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Futuristic Cyberpunk Input Field</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0a0a18;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Background gradient animation */
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(125deg, #0d0d2a, #1a0b35, #220f4e, #151030);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      z-index: -2;
+    }
+
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Grid background */
+    .grid {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background-image: 
+        linear-gradient(rgba(65, 3, 159, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(65, 3, 159, 0.05) 1px, transparent 1px);
+      background-size: 30px 30px;
+      transform: perspective(500px) rotateX(60deg);
+      animation: gridMove 20s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes gridMove {
+      0% {
+        transform: perspective(500px) rotateX(60deg) translateY(0);
+      }
+      100% {
+        transform: perspective(500px) rotateX(60deg) translateY(30px);
+      }
+    }
+
+    /* Input container */
+    .input-container {
+      position: relative;
+      width: 320px;
+      margin: 0 auto;
+    }
+
+    /* Input field styling */
+    .cyber-input {
+      width: 100%;
+      height: 60px;
+      padding: 16px 24px;
+      background: rgba(13, 18, 56, 0.3);
+      border: 1px solid rgba(82, 33, 229, 0.3);
+      border-radius: 8px;
+      font-size: 16px;
+      color: #fff;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(12px);
+      box-shadow: 
+        0 0 30px rgba(103, 15, 255, 0.2),
+        inset 0 0 15px rgba(103, 15, 255, 0.1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .cyber-input:focus {
+      outline: none;
+      border-color: rgba(82, 33, 229, 0.8);
+      box-shadow: 
+        0 0 35px rgba(103, 15, 255, 0.35),
+        inset 0 0 15px rgba(103, 15, 255, 0.2);
+    }
+
+    /* Label animation */
+    .label {
+      position: absolute;
+      left: 24px;
+      top: 20px;
+      color: rgba(149, 149, 255, 0.7);
+      font-size: 16px;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .cyber-input:focus ~ .label,
+    .cyber-input.has-content ~ .label {
+      top: -26px;
+      left: 10px;
+      font-size: 14px;
+      color: #bb86fc;
+      text-shadow: 0 0 8px rgba(187, 134, 252, 0.6);
+    }
+
+    /* Underline animation */
+    .underline {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #5200ff, #c770ff, #5200ff);
+      background-size: 200% auto;
+      transition: all 0.4s ease;
+      transform: translateX(-50%);
+    }
+
+    .cyber-input:focus ~ .underline {
+      width: calc(100% - 2px);
+      animation: gradient 3s linear infinite;
+    }
+
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Validation styling */
+    .validation-indicator {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%) scale(0);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    .validation-indicator.valid {
+      background: rgba(82, 229, 132, 0.15);
+      border: 1px solid rgba(82, 229, 132, 0.5);
+      transform: translateY(-50%) scale(1);
+      box-shadow: 0 0 15px rgba(82, 229, 132, 0.4);
+    }
+
+    .validation-indicator.invalid {
+      background: rgba(229, 82, 82, 0.15);
+      border: 1px solid rgba(229, 82, 82, 0.5);
+      transform: translateY(-50%) scale(1);
+      box-shadow: 0 0 15px rgba(229, 82, 82, 0.4);
+    }
+
+    /* Particles */
+    .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(103, 15, 255, 0.6);
+      box-shadow: 0 0 10px rgba(103, 15, 255, 0.8);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* Cursor styling */
+    .cyber-input {
+      caret-color: #bb86fc;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+      .input-container {
+        width: 85%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+  <div class="grid"></div>
+  
+  <div class="input-container">
+    <input type="text" class="cyber-input" id="cyberInput" autocomplete="off">
+    <div class="label">Search the void...</div>
+    <div class="underline"></div>
+    <div class="validation-indicator">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="check-icon">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <div class="particles" id="particles"></div>
+  </div>
+
+  <script>
+    // Input field functionality
+    const input = document.getElementById('cyberInput');
+    const validationIndicator = document.querySelector('.validation-indicator');
+    const particles = document.getElementById('particles');
+    
+    // Check if input has content
+    input.addEventListener('input', function() {
+      if (this.value.length > 0) {
+        this.classList.add('has-content');
+        
+        // Simple validation - at least 4 characters
+        if (this.value.length >= 4) {
+          validationIndicator.classList.add('valid');
+          validationIndicator.classList.remove('invalid');
+          validationIndicator.style.color = 'rgba(82, 229, 132, 0.9)';
+        } else {
+          validationIndicator.classList.add('invalid');
+          validationIndicator.classList.remove('valid');
+          validationIndicator.style.color = 'rgba(229, 82, 82, 0.9)';
+        }
+      } else {
+        this.classList.remove('has-content');
+        validationIndicator.classList.remove('valid');
+        validationIndicator.classList.remove('invalid');
+      }
+    });
+
+    // Focus effects
+    input.addEventListener('focus', function() {
+      createParticles();
+    });
+
+    input.addEventListener('blur', function() {
+      setTimeout(() => {
+        removeParticles();
+      }, 1000);
+    });
+
+    // Particle effects
+    function createParticles() {
+      const particleCount = 15;
+      const inputRect = input.getBoundingClientRect();
+      
+      for (let i = 0; i < particleCount; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.classList.add('particle');
+          
+          // Random position around the input
+          const randomX = Math.random() * inputRect.width;
+          const randomY = Math.random() * 60 - 30; // Above or below the input
+          const side = Math.random() > 0.5 ? -20 : inputRect.width + 20;
+          
+          particle.style.left = `${randomX}px`;
+          particle.style.top = `${inputRect.height/2 + randomY}px`;
+          
+          // Random animation
+          const duration = 2 + Math.random() * 3;
+          const size = 3 + Math.random() * 5;
+          
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.animation = `moveParticle ${duration}s ease-out forwards`;
+          
+          // Random color
+          const hue = 250 + Math.random() * 60; // Purple to blue range
+          particle.style.backgroundColor = `hsla(${hue}, 100%, 70%, 0.8)`;
+          particle.style.boxShadow = `0 0 ${size+5}px hsla(${hue}, 100%, 70%, 0.5)`;
+          
+          // Add keyframe animation dynamically
+          const styleSheet = document.styleSheets[0];
+          const keyframes = `
+            @keyframes moveParticle {
+              0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+              }
+              10% {
+                opacity: 0.8;
+              }
+              100% {
+                transform: translateY(${-100 - Math.random() * 100}px) translateX(${(Math.random() - 0.5) * 100}px);
+                opacity: 0;
+              }
+            }
+          `;
+          
+          styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+          
+          particles.appendChild(particle);
+          
+          // Clean up
+          setTimeout(() => {
+            particle.remove();
+          }, duration * 1000);
+        }, i * 100);
+      }
+    }
+
+    function removeParticles() {
+      const existingParticles = document.querySelectorAll('.particle');
+      existingParticles.forEach(particle => {
+        particle.style.opacity = '0';
+        setTimeout(() => {
+          particle.remove();
+        }, 500);
+      });
+    }
+
+    // Custom cursor trail effect
+    let mouseX = 0, mouseY = 0;
+    const cursorParticlesActive = false;
+
+    document.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      // Only create cursor trail particles when near the input
+      const inputRect = input.getBoundingClientRect();
+      const nearInput = 
+        mouseX > inputRect.left - 100 && 
+        mouseX < inputRect.right + 100 &&
+        mouseY > inputRect.top - 100 && 
+        mouseY < inputRect.bottom + 100;
+      
+      if (nearInput && input === document.activeElement) {
+        createCursorParticle();
+      }
+    });
+
+    function createCursorParticle() {
+      const cursorParticle = document.createElement('div');
+      cursorParticle.classList.add('particle');
+      
+      const size = 2 + Math.random() * 3;
+      cursorParticle.style.width = `${size}px`;
+      cursorParticle.style.height = `${size}px`;
+      
+      const inputRect = input.getBoundingClientRect();
+      const offsetX = mouseX - inputRect.left;
+      const offsetY = mouseY - inputRect.top;
+      
+      cursorParticle.style.left = `${offsetX}px`;
+      cursorParticle.style.top = `${offsetY}px`;
+      
+      // Random color in cyberpunk palette
+      const hue = 250 + Math.random() * 60;
+      cursorParticle.style.backgroundColor = `hsla(${hue}, 100%, 70%, 0.8)`;
+      cursorParticle.style.boxShadow = `0 0 ${size+2}px hsla(${hue}, 100%, 70%, 0.5)`;
+      
+      // Fade out animation
+      cursorParticle.style.animation = 'fadeOut 1.5s ease-out forwards';
+      
+      // Add keyframe animation dynamically if it doesn't exist
+      let fadeOutExists = false;
+      for (let i = 0; i < document.styleSheets[0].cssRules.length; i++) {
+        if (document.styleSheets[0].cssRules[i].name === 'fadeOut') {
+          fadeOutExists = true;
+          break;
+        }
+      }
+      
+      if (!fadeOutExists) {
+        const styleSheet = document.styleSheets[0];
+        const keyframes = `
+          @keyframes fadeOut {
+            0% {
+              transform: translate(0, 0);
+              opacity: 0.8;
+            }
+            100% {
+              transform: translate(${(Math.random() - 0.5) * 40}px, ${-20 - Math.random() * 20}px);
+              opacity: 0;
+            }
+          }
+        `;
+        
+        styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+      }
+      
+      particles.appendChild(cursorParticle);
+      
+      // Clean up
+      setTimeout(() => {
+        cursorParticle.remove();
+      }, 1500);
+    }
+  </script>
+</body>
+      </html>
